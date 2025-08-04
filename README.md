@@ -90,8 +90,6 @@ This endpoint verifies scanned ticket QR codes at event entry points.
 - Receives encrypted QR code data from scanning devices.  
 - Decrypts and queries the booking's existence and status.  
 - Returns validation result indicating if the ticket is valid, already used, or invalid.  
-- Optionally marks the ticket as used to prevent re-entry.
-
 
 ---
 
