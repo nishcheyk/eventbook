@@ -196,8 +196,9 @@ This middleware protects the register and login routes by restricting them to 5 
 
 ## How to Run
 
+### Using Docker (Recommended)
 
-1. Clone and install dependencies:
+1. Clone the repository and install dependencies:
 ```
 git clone https://github.com/nishcheyk/eventbook
 cd event-booking-api
@@ -219,24 +220,66 @@ TWILIO_SID=your_twilio_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_PHONE=your_twilio_phone
 ```
-text
 
-3. Run with Docker for ease of deployment:
+3. Run the application with Docker:  
 ```
 rm -rf node_modules
 docker-compose up --build
-
 ```
 
-4. Access API:
+4. Access the API:  
 ```
-REST endpoints: http://localhost:3000/api
-
-Swagger UI docs: http://localhost:3000/api-docs
-
+- REST endpoints: `http://localhost:3000/api`  
+- Swagger UI docs: `http://localhost:3000/api-docs`
 ```
-
 ---
+
+### Without Docker (Local Development)
+
+1. Clone the repository and install dependencies:  
+```
+git clone https://github.com/nishcheyk/eventbook
+cd event-booking-api
+npm install
+```
+
+
+2. Install bcryptjs to avoid native bcrypt build issues:  
+```
+npm install bcryptjs
+```
+
+
+3. Set up environment variables in `.env` (create a `.env` file in the root folder):  
+```
+MONGO_URL=mongodb://localhost:27017/eventbook_db
+JWT_SECRET=your_jwt_secret_key
+PORT=3000
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@example.com
+SMTP_PASS=your-email-password
+MAIL_FROM="Event Booking your-email@example.com"
+TWILIO_SID=your_twilio_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE=your_twilio_phone
+```
+
+4. Start the server locally:  
+```
+npm start
+```
+text
+
+5. The server will be running at
+```
+- REST endpoints: `http://localhost:3000/api`  
+- Swagger UI docs: `http://localhost:3000/api-docs`
+```
+
+**Note:**  
+- Replace placeholders with your actual credentials in the `.env` file.    
+- Ensure you have a local MongoDB instance running when not using Docker.
 
 ## Router and Middleware Example
 ```
