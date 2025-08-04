@@ -1,20 +1,17 @@
-// email.service.ts
 import nodemailer from "nodemailer";
 import QRCode from "qrcode";
 
-const DEFAULT_SMTP_HOST = "smtp.gmail.com";
-const DEFAULT_SMTP_PORT = 587;
-const DEFAULT_SMTP_USER = "bybirthpro@gmail.com";
-const DEFAULT_SMTP_PASS = "yrpdxhyjjlwvqjrh"; // Replace with your app password
-const DEFAULT_MAIL_FROM = "Event Booking <bybirthpro@gmail.com>";
-
-const SMTP_HOST = process.env.SMTP_HOST || DEFAULT_SMTP_HOST;
+const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
 const SMTP_PORT = process.env.SMTP_PORT
   ? Number(process.env.SMTP_PORT)
-  : DEFAULT_SMTP_PORT;
-const SMTP_USER = process.env.SMTP_USER || DEFAULT_SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS || DEFAULT_SMTP_PASS;
-const MAIL_FROM = process.env.MAIL_FROM || DEFAULT_MAIL_FROM;
+  : 587;
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
+const MAIL_FROM = process.env.MAIL_FROM || "Event Booking <no-reply@example.com>";
+
+if (!SMTP_USER || !SMTP_PASS) {
+  throw new Error("SMTP_USER and SMTP_PASS must be set in environment variables");
+}
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -41,7 +38,6 @@ export const sendBookingNotification = async ({
     throw new Error("qrContent must be a string");
   }
 
-  // Console log for qrContent to help with testing
   console.log("QR Content being encoded into QR code:", qrContent);
 
   const qrCid = "qrcode@eventbook";
@@ -66,9 +62,7 @@ export const sendBookingNotification = async ({
         },
       ],
     });
-    console.log(
-      `Email sent successfully to ${toEmail}: Message ID ${info.messageId}`
-    );
+    console.log(`Email sent successfully to ${toEmail}: Message ID ${info.messageId}`);
   } catch (error) {
     console.error(`Failed to send email to ${toEmail}:`, error);
     throw error;
