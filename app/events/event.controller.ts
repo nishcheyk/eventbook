@@ -7,12 +7,10 @@ import {
   getEventService,
 } from "./event.service";
 
-
 export const listEvents = asyncHandler(async (_req: Request, res: Response) => {
   const events = await listEventsService();
   res.json(events);
 });
-
 
 export const eventDetails = asyncHandler(async (req: Request, res: Response) => {
   const event = await getEventService(req.params.id);

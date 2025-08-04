@@ -1,10 +1,4 @@
-import Event from "./event.schema";
-import { IEvent } from "./event.schema";
-
-interface Seat {
-  seatNumber: number;
-  isBooked: boolean;
-}
+import Event, { IEvent } from "./event.schema";
 
 interface CreateEventDTO {
   title: string;
@@ -26,25 +20,16 @@ export const createEventService = async (data: CreateEventDTO): Promise<IEvent> 
     date: { $gte: startOfDay, $lte: endOfDay },
   });
 
-  if (eventExists) {
-    throw new Error("Event already exists on this date");
-  }
-
-  const seats: Seat[] = [];
-  for (let i = 1; i <= totalSeats; i++) {
-    seats.push({ seatNumber: i, isBooked: false });
-  }
+  if (eventExists) throw new Error("Event already exists on this date");
 
   const newEvent = new Event({
     title,
     description,
     date: new Date(date),
     totalSeats,
-    seats,
   });
 
   await newEvent.save();
-
   return newEvent;
 };
 
@@ -55,5 +40,3 @@ export const listEventsService = async (): Promise<IEvent[]> => {
 export const getEventService = async (id: string): Promise<IEvent | null> => {
   return Event.findById(id).select("-__v").lean<IEvent>().exec();
 };
-
-

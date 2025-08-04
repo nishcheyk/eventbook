@@ -1,4 +1,3 @@
-// app/booking/booking.schema.ts
 import mongoose, { Schema, Document, model, models, ObjectId } from "mongoose";
 
 export interface IBooking extends Document {
@@ -10,15 +9,18 @@ export interface IBooking extends Document {
 }
 
 const BookingSchema = new Schema<IBooking>({
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
-  eventId: { type: Schema.Types.ObjectId, ref: "Event" },
-  seatNumber: Number,
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  eventId: { type: Schema.Types.ObjectId, ref: "Event", required: true },
+  seatNumber: { type: Number, required: true },
   qrCode: String,
   status: { type: String, enum: ["booked", "cancelled"], default: "booked" },
 });
 
+
+BookingSchema.index({ eventId: 1, seatNumber: 1 }, { unique: true });
+
 if (mongoose.models.Booking) {
-  delete mongoose.models.User;
+  delete mongoose.models.Booking;
 }
 const Booking = models.Booking || model<IBooking>("Booking", BookingSchema);
 export default Booking;

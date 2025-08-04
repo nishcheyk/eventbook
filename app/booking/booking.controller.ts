@@ -8,7 +8,7 @@ export const bookTicket = asyncHandler(async (req: Request, res: Response): Prom
 
   if (!userId || !email || !phone) {
     res.status(400).json({
-      message: "User info (userId, email, phone) required in request body for testing",
+      message: "User info (userId, email, phone) required in request body",
     });
     return;
   }
