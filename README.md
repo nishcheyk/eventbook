@@ -125,10 +125,8 @@ This endpoint verifies scanned ticket QR codes at event entry points.
 </p>
 
 
-<video width="300" controls>
-  <source src="images/8.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[▶️ Watch the video](https://drive.google.com/file/d/1r0hr-rzcdfxdgPkJOZF6sihW6S7R_fcD/view?usp=sharing)
+
 
 ## Challenges Faced & Solutions
 
