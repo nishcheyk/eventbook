@@ -240,7 +240,7 @@ Swagger UI docs: http://localhost:3000/api-docs
 ---
 
 ## Router and Middleware Example
-``
+```
 import { Router } from "express";
 import authMiddleware from "../common/middleware/auth.middleware";
 import { registerController, loginController } from "./users.controller";
