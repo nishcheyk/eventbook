@@ -12,27 +12,30 @@ The Event Booking API is a scalable, secure backend solution built with Node.js,
 
 ## Technology Stack
 
-Node.js & Express: Backend server and routing
+### Backend
+- **Node.js & Express**: Backend server and routing framework for building scalable APIs.
+- **TypeScript**: Adds static typing for safer and more maintainable code.
 
-TypeScript: Adds static typing and improved maintainability
+### Database
+- **MongoDB with Mongoose**: NoSQL database with schema enforcement and indexing.
 
-MongoDB with Mongoose: NoSQL database with schema enforcement and indexing
+### Authentication & Security
+- **JWT (JSON Web Tokens)**: Token-based authentication for secure access control.
+- **bcryptjs**: Password hashing for storing credentials securely.
+- **express-rate-limit**: Rate limiting middleware to protect critical routes like login and registration from brute-force attacks.
 
-JWT & bcryptjs: Token-based authentication and secure password hashing
+### Middleware & Utilities
+- **express-async-handler**: Simplifies async error handling in Express routes.
+- **qrcode npm package**: Generates encrypted QR codes for tickets.
 
-express-async-handler: Middleware to simplify async error handling
+### Notifications
+- **Nodemailer (SMTP)**: Sends transactional emails (e.g., booking confirmations).
+- **Twilio API**: Sends SMS notifications for real-time alerts.
+- **Redis with Bull queue**: Manages background job queues for sending notifications efficiently and reliably.
 
-Nodemailer (SMTP): Sends transactional emails for booking confirmations
-
-Twilio API: Sends SMS notifications for real-time alerts
-
-Swagger UI: Interactive API documentation
-
-Docker & Docker Compose: Containerized deployment and environment management
-
-qrcode npm package: Generates encrypted QR codes for tickets
-
-express-rate-limit: Middleware to implement rate limiting on critical routes like login and registration, protecting the API from brute-force attacks and abuse
+### Documentation & Deployment
+- **Swagger UI**: Provides interactive API documentation.
+- **Docker & Docker Compose**: Containerizes the application for consistent deployment across environments.
 
 
 ---
