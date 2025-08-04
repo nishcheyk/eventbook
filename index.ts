@@ -1,12 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
+
 import routes from "./app/routes";
 import "reflect-metadata";
 
-const result = dotenv.config();
-
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger.json";
 const app = express();
 
 app.use(cors());
@@ -25,10 +27,12 @@ export async function connectDB(uri: string) {
 export async function disconnectDB() {
   if (mongoose.connection.readyState !== 0) await mongoose.disconnect();
 }
-
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 if (process.env.NODE_ENV !== "test") {
   connectDB(process.env.MONGODB_URI!).then(() =>
-    app.listen(3000, () => console.log("Server running on port 3000"))
+    app.listen(3000, () =>
+      console.log("Server running on port 3000. Swagger docs at /api-docs")
+    )
   );
 }
 

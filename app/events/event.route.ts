@@ -1,12 +1,17 @@
-import { Router } from "express";
-import { listEvents, eventDetails, createEvent } from "./event.controller";
+import express from "express";
+import {
+  createEventController,
+  listEvents,
+  eventDetails,
+} from "./event.controller";
+import authMiddleware from "../common/middleware/auth.middleware";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/", listEvents);
-router.get("/:id", eventDetails);
+router.get("/", listEvents); 
+router.get("/:id", eventDetails); 
+router.post("/", authMiddleware, createEventController); // protected create event
 
-// Remove authMiddleware and adminMiddleware from this route
-router.post("/", createEvent);
+
 
 export default router;

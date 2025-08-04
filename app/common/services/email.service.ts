@@ -1,13 +1,15 @@
 import nodemailer from "nodemailer";
 import QRCode from "qrcode";
 
-const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
+
+
+const SMTP_HOST = process.env.SMTP_HOST ;
 const SMTP_PORT = process.env.SMTP_PORT
   ? Number(process.env.SMTP_PORT)
   : 587;
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
-const MAIL_FROM = process.env.MAIL_FROM || "Event Booking <no-reply@example.com>";
+const MAIL_FROM = process.env.MAIL_FROM ;
 
 if (!SMTP_USER || !SMTP_PASS) {
   throw new Error("SMTP_USER and SMTP_PASS must be set in environment variables");
@@ -34,6 +36,8 @@ export const sendBookingNotification = async ({
   message: string;
   qrContent: string;
 }) => {
+  console.log("sendBookingNotification called with:", { toEmail, subject, message, qrContent });
+
   if (typeof qrContent !== "string") {
     throw new Error("qrContent must be a string");
   }

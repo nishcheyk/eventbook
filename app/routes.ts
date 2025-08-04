@@ -8,6 +8,5 @@ router.use("/users", userRouter);
 router.use("/events", eventRouter);
 router.use("/bookings", bookingRouter);
 
-// POST /bookings/validate — validate QR code
-router.post("/v", validateQRCode);
+
 export default router;
