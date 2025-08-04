@@ -75,7 +75,7 @@ Endpoint	Method	Description
 /api/events/:id	GET	Get details of a specific event
 /api/bookings	POST	Book a seat on an event (requires authentication)
 /api/bookings/validate	POST	Validate a ticket using QR code data
-/api/bookings/:id/cancel	DELETE	Cancel a booking (requires authentication)
+
 ```
 ---
 
