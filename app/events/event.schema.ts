@@ -5,14 +5,30 @@ export interface IEvent extends Document {
   description: string;
   date: Date;
   totalSeats: number;
+  bookedSeats?: number[];
+  location: string;   
+  imageUrl: string;   
 }
 
-const EventSchema = new Schema<IEvent>({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  date: { type: Date, required: true },
-  totalSeats: { type: Number, required: true },
-});
+const EventSchema = new Schema<IEvent>(
+  {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    date: { type: Date, required: true },
+    totalSeats: { type: Number, required: true },
+    location: { type: String, required: true },
+    imageUrl: { type: String, default: "" }
+    
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
-const Event = mongoose.models.Event || mongoose.model<IEvent>("Event", EventSchema);
+
+EventSchema.virtual("bookedSeats");
+
+const Event =
+  mongoose.models.Event || mongoose.model<IEvent>("Event", EventSchema);
 export default Event;

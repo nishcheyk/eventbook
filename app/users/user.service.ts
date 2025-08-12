@@ -21,25 +21,33 @@ export const registerUserService = async ({ name, email, phone, password }: Regi
     return user;
   } catch (err: any) {
     if (err.code === 11000 && err.keyPattern?.email) {
-      throw new Error("Email already exists");
+      const error: any = new Error("Email already exists");
+      error.statusCode = 400;
+      throw error;
     }
-    throw err; // propagate other errors
+    throw err;
   }
 };
 
 export const loginUserService = async ({ email, password }: LoginDTO) => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("No user");
+    const error: any = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
   }
 
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
-    throw new Error("Invalid credentials");
+    const error: any = new Error("Invalid credentials");
+    error.statusCode = 401;
+    throw error;
   }
 
   if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET not set");
+    const error: any = new Error("Server config error: JWT_SECRET not set");
+    error.statusCode = 500;
+    throw error;
   }
 
   const token = jwt.sign(
@@ -47,5 +55,15 @@ export const loginUserService = async ({ email, password }: LoginDTO) => {
     process.env.JWT_SECRET,
     { expiresIn: "1d" }
   );
-  return token;
+
+  return {
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      isAdmin: user.isAdmin,
+    },
+  };
 };
