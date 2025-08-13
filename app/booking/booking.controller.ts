@@ -1,7 +1,7 @@
 // booking.controller.ts
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { bookTicketService, validateQRCodeService,getBookedEventsWithSeatsService  } from "./booking.service";
+import { bookTicketService, getAllBookingsWithUserAndEventService,  validateQRCodeService, deleteBookingService,getBookedEventsWithSeatsService  } from "./booking.service";
 import { notificationQueue } from "../common/services/notification.service";
 
 /**
@@ -144,6 +144,56 @@ export const getBookedEventsWithSeats = asyncHandler(
         success: false,
         message: "Unable to fetch booked event data"
       });
+    }
+  }
+);
+
+
+
+export const getAllBookingsWithUserAndEvent = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const allBookings = await getAllBookingsWithUserAndEventService();
+      res.status(200).json({
+        success: true,
+        count: allBookings.length,
+        bookings: allBookings
+      });
+    } catch (error: any) {
+      console.error("Error fetching all bookings:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Unable to fetch all bookings for admin"
+      });
+    }
+  }
+);
+
+export const deleteBooking = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const { bookingId } = req.params;
+    if (!bookingId) {
+      res.status(400).json({ success: false, message: "Booking ID is required" });
+      return;
+    }
+
+    try {
+      const deletedBooking = await deleteBookingService(bookingId);
+      res.status(200).json({
+        success: true,
+        message: "Booking deleted successfully",
+        booking: deletedBooking
+      });
+    } catch (error: any) {
+      if (error.message === "Booking not found") {
+        res.status(404).json({ success: false, message: error.message });
+      } else {
+        console.error("Error deleting booking:", error);
+        res.status(500).json({
+          success: false,
+          message: "Unable to delete booking"
+        });
+      }
     }
   }
 );

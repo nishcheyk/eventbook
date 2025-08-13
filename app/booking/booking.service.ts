@@ -2,7 +2,7 @@
 import Booking from "./booking.schema";
 import Event from "../events/event.schema";
 import QRCode from "qrcode";
-
+import User from "../users/user.schema"; 
 /**
  * Service to get events booked by a user, along with seat numbers they booked.
  */
@@ -145,3 +145,54 @@ export const validateQRCodeService = async (
   };
 };
 
+export const getAllBookingsWithUserAndEventService = async () => {
+  try {
+    const bookings = await Booking.find()
+      .populate("eventId")
+      .populate("userId")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return bookings.map((booking) => ({
+      bookingId: booking._id,
+      status: booking.status,
+      seatNumber: booking.seatNumber,
+      seatCategory: booking.seatCategory,
+      qrCode: booking.qrCode,
+      user: booking.userId
+        ? {
+            _id: booking.userId._id,
+            name: booking.userId.name,
+            email: booking.userId.email,
+            phone: booking.userId.phone,
+          }
+        : null,
+      event: booking.eventId
+        ? {
+            _id: booking.eventId._id,
+            title: booking.eventId.title,
+            description: booking.eventId.description,
+            date: booking.eventId.date,
+            location: booking.eventId.location,
+            imageUrl: booking.eventId.imageUrl,
+          }
+        : null,
+    }));
+  } catch (err) {
+    console.error("DB Error in getAllBookingsWithUserAndEventService:", err);
+    throw new Error("Database error while fetching bookings");
+  }
+};
+
+export const deleteBookingService = async (bookingId: string) => {
+  try {
+    const deleted = await Booking.findByIdAndDelete(bookingId);
+    if (!deleted) {
+      throw new Error("Booking not found");
+    }
+    return deleted;
+  } catch (err) {
+    console.error("DB Error while deleting booking:", err);
+    throw err;
+  }
+};
