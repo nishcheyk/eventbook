@@ -10,20 +10,19 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/eventbooki
 async function seed() {
   try {
     await mongoose.connect(MONGO_URI);
-    console.log("✅ Connected to MongoDB");
+    console.log(" Connected to MongoDB");
 
-    // Clear existing data (use with care in prod)
     await Booking.deleteMany({});
     await Event.deleteMany({});
     await User.deleteMany({});
     console.log("🗑️ Existing data cleared");
 
-    // Create fake users
+ 
     const users = await User.insertMany([
       {
         name: "Alice Johnson",
         email: "alice@example.com",
-        password: "hashedpassword1", // Use hashed passwords in real apps
+        password: "hashedpassword1", 
         isAdmin: false,
         phone: "1234567890",
       },

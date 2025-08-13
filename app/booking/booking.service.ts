@@ -153,11 +153,20 @@ export const getAllBookingsWithUserAndEventService = async () => {
       .sort({ createdAt: -1 })
       .lean();
 
+    console.log(
+      "Bookings from DB:",
+      bookings.map(b => ({
+        id: b._id,
+        seatNumber: b.seatNumber,
+        seatCategory: b.seatCategory,   // <--- log here
+      }))
+    );
+
     return bookings.map((booking) => ({
       bookingId: booking._id,
       status: booking.status,
       seatNumber: booking.seatNumber,
-      seatCategory: booking.seatCategory,
+      seatCategory: booking.seatCategory, // keep singular for admin
       qrCode: booking.qrCode,
       user: booking.userId
         ? {
@@ -179,10 +188,14 @@ export const getAllBookingsWithUserAndEventService = async () => {
         : null,
     }));
   } catch (err) {
-    console.error("DB Error in getAllBookingsWithUserAndEventService:", err);
+    console.error(
+      "DB Error in getAllBookingsWithUserAndEventService:",
+      err
+    );
     throw new Error("Database error while fetching bookings");
   }
 };
+
 
 export const deleteBookingService = async (bookingId: string) => {
   try {
