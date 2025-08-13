@@ -151,8 +151,10 @@ export const getBookedEventsWithSeats = asyncHandler(
 
 
 export const getAllBookingsWithUserAndEvent = asyncHandler(
+
   async (req: Request, res: Response): Promise<void> => {
     try {
+      
       const allBookings = await getAllBookingsWithUserAndEventService();
       res.status(200).json({
         success: true,
