@@ -4,14 +4,12 @@ import {
   listEvents,
   eventDetails,
 } from "./event.controller";
-import authMiddleware from "../common/middleware/auth.middleware";
+import { authenticator } from "../common/middlewares/auth.middleware";
 
 const router = express.Router();
 
-router.get("/", listEvents); 
-router.get("/:id", eventDetails); 
-router.post("/", authMiddleware, createEventController); // protected create event
-
-
+router.get("/", authenticator(), listEvents);
+router.get("/:id", eventDetails);
+router.post("/", authenticator(true), createEventController); // protected create event
 
 export default router;

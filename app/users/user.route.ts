@@ -1,21 +1,28 @@
-import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
-import { registerController, loginController } from "./users.controller";
+import { Router } from "express";
+import {
+  registerController,
+  loginController,
+  refreshTokenController,
+  logoutController,
+} from "./users.controller";
+
+import {
+  loginLimiter,
+  registerLimiter,
+  refreshLimiter,
+  logoutLimiter,
+} from "../common/middlewares/rateLimiters";
+
+import { authenticator } from "../common/middlewares/auth.middleware";
 
 const router = Router();
 
-const authRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 150, 
-  message: {
-    status: 429,
-    error: "Too many requests from this IP, please try again after 15 minutes"
-  },
-  standardHeaders: true, // Return rate limit info in the RateLimit-* headers
-  legacyHeaders: false,
-});
+// Public routes with rate limiters
+router.post("/register", registerLimiter, registerController);
+router.post("/login", loginLimiter, loginController);
+router.post("/refresh-token", refreshLimiter, refreshTokenController);
 
-router.post('/register', authRateLimiter, registerController);
-router.post('/login', authRateLimiter, loginController);
+// Protected logout route with authenticator middleware & rate limiting
+router.post("/logout", authenticator, logoutLimiter, logoutController);
 
 export default router;
