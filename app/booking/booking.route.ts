@@ -1,8 +1,6 @@
 import { Router } from "express";
 import { bookTicket, validateQRCode,deleteBooking , getBookedEventsWithSeats,getAllBookingsWithUserAndEvent } from "./booking.controller";
 
-// existing routes...
-
 
 
 const router = Router();

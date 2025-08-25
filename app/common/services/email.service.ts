@@ -1,15 +1,11 @@
 import nodemailer from "nodemailer";
 import QRCode from "qrcode";
 
-
-
-const SMTP_HOST = process.env.SMTP_HOST ;
-const SMTP_PORT = process.env.SMTP_PORT
-  ? Number(process.env.SMTP_PORT)
-  : 587;
+const SMTP_HOST = process.env.SMTP_HOST;
+const SMTP_PORT = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
-const MAIL_FROM = process.env.MAIL_FROM ;
+const MAIL_FROM = process.env.MAIL_FROM;
 
 if (!SMTP_USER || !SMTP_PASS) {
   throw new Error("SMTP_USER and SMTP_PASS must be set in environment variables");
@@ -18,7 +14,7 @@ if (!SMTP_USER || !SMTP_PASS) {
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
   port: SMTP_PORT,
-  secure: false, // TLS on port 587
+  secure: false,
   auth: {
     user: SMTP_USER,
     pass: SMTP_PASS,
@@ -30,45 +26,58 @@ export const sendBookingNotification = async ({
   subject,
   message,
   qrContent,
+  seatNumbers,
+  seatCategories,
+  reservationName,
 }: {
   toEmail: string;
   subject: string;
-  message: string;
-  qrContent: string;
+  message?: string;
+  qrContent: string | string[];
+  seatNumbers: string[];
+  seatCategories: string[];
+  reservationName: string;
 }) => {
-  console.log("sendBookingNotification called with:", { toEmail, subject, message, qrContent });
+  const qrArray = Array.isArray(qrContent) ? qrContent : [qrContent];
 
-  if (typeof qrContent !== "string") {
-    throw new Error("qrContent must be a string");
+  const attachments: any[] = [];
+  let qrHtml = "";
+
+  for (let i = 0; i < qrArray.length; i++) {
+    const qr = qrArray[i];
+    if (typeof qr !== "string") throw new Error(`QR at index ${i} is not a string`);
+
+    const cid = `qrcode${i}@eventbook`;
+    const qrCodeBuffer = await QRCode.toBuffer(qr, { width: 200 });
+
+    attachments.push({ filename: `qrcode${i + 1}.png`, content: qrCodeBuffer, cid });
+    qrHtml += `<div style="margin-bottom:10px">
+        <img src="cid:${cid}" alt="QR Code ${i + 1}" style="width:200px;height:auto;" />
+      </div>`;
   }
 
-  console.log("QR Content being encoded into QR code:", qrContent);
-
-  const qrCid = "qrcode@eventbook";
-  const qrCodeBuffer = await QRCode.toBuffer(qrContent, { width: 200 });
-
-  const emailHtml = `
-    <p>${message}</p>
-    <img src="cid:${qrCid}" alt="QR Code" style="width:200px; height:auto;" />
+  const detailsHtml = `
+    <h3>Booking Details</h3>
+    <p><strong>Name:</strong> ${reservationName}</p>
+    <p><strong>Seats:</strong> ${seatNumbers.join(", ")}</p>
+    <p><strong>Categories:</strong> ${seatCategories.join(", ")}</p>
   `;
 
-  try {
-    const info = await transporter.sendMail({
-      from: MAIL_FROM,
-      to: toEmail,
-      subject,
-      html: emailHtml,
-      attachments: [
-        {
-          filename: "qrcode.png",
-          content: qrCodeBuffer,
-          cid: qrCid,
-        },
-      ],
-    });
-    console.log(`Email sent successfully to ${toEmail}: Message ID ${info.messageId}`);
-  } catch (error) {
-    console.error(`Failed to send email to ${toEmail}:`, error);
-    throw error;
-  }
+  const emailHtml = `
+    <div>
+      ${message ? `<p>${message}</p>` : ""}
+      ${detailsHtml}
+      ${qrHtml}
+    </div>
+  `;
+
+  const info = await transporter.sendMail({
+    from: MAIL_FROM,
+    to: toEmail,
+    subject,
+    html: emailHtml,
+    attachments,
+  });
+
+  console.log(`Email sent to ${toEmail}, message ID: ${info.messageId}`);
 };

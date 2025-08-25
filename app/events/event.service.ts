@@ -64,7 +64,8 @@ export const listEventsService = async (): Promise<IEvent[]> => {
               status: "booked",
             },
           },
-          { $project: { _id: 0, seatNumber: 1 } },
+          { $unwind: "$seatNumbers" }, // flatten each seat into its own doc
+          { $project: { _id: 0, seatNumber: "$seatNumbers" } },
         ],
         as: "bookings",
       },
@@ -90,6 +91,7 @@ export const listEventsService = async (): Promise<IEvent[]> => {
 };
 
 
+
 export const getEventService = async (
   id: string
 ): Promise<IEvent | null> => {
@@ -100,9 +102,10 @@ export const getEventService = async (
     eventId: id,
     status: "booked",
   })
-    .select("seatNumber -_id")
+    .select("seatNumbers -_id")
     .lean();
 
-  event.bookedSeats = bookings.map((b) => b.seatNumber);
+  // Flatten all seatNumbers arrays into one array
+  event.bookedSeats = bookings.flatMap((b) => b.seatNumbers || []);
   return event;
 };

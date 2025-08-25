@@ -6,7 +6,7 @@ const router = Router();
 
 const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
-  max: 5, 
+  max: 150, 
   message: {
     status: 429,
     error: "Too many requests from this IP, please try again after 15 minutes"

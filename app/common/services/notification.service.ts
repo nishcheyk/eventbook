@@ -1,33 +1,53 @@
-// notification.queue.ts
 import notificationQueue from "./bull-queue.service";
 import { sendBookingNotification } from "./email.service";
 import { sendSMS } from "./sms.service";
 
 notificationQueue.process("sendNotification", async (job) => {
-  const { email, phone, subject, message, qrCode } = job.data;
+  const {
+    email,
+    phone,
+    subject,
+    message,
+    qrCode,
+    seatNumbers,
+    seatCategories,
+    reservationName,
+  } = job.data as {
+    email?: string;
+    phone?: string;
+    subject: string;
+    message?: string;
+    qrCode: string | string[];
+    seatNumbers: string[];
+    seatCategories: string[];
+    reservationName: string;
+  };
 
   if (email) {
-    console.log(`Sending email to ${email} with subject "${subject}"`);
     try {
       await sendBookingNotification({
         toEmail: email,
         subject,
         message,
-        qrContent: qrCode, // This *must* be a string, booking._id.toString()
+        qrContent: qrCode,
+        seatNumbers,
+        seatCategories,
+        reservationName,
       });
-      console.log(`Email sent to ${email}`);
     } catch (err) {
       console.error(`Failed to send email to ${email}`, err);
     }
   }
 
   if (phone) {
-    console.log(`Sending SMS to ${phone}: ${message}`);
     try {
-      const smsResponse = await sendSMS(phone, message);
-      console.log(`SMS sent successfully to ${phone}`, smsResponse);
+      await sendSMS(
+        phone,
+        message ||
+          `Booking confirmed for ${reservationName}. Seats: ${seatNumbers.join(", ")}`
+      );
     } catch (error) {
-      console.error(`Failed to send SMS to ${phone}`, error);
+      console.error(`Failed to send SMS to ${phone}:`, error);
     }
   }
 });
